@@ -1,6 +1,7 @@
 package com.wmj.newzhihu.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.wmj.newzhihu.R;
+import com.wmj.newzhihu.activity.NewsDetailsActivity;
 import com.wmj.newzhihu.bean.Stories;
 
 import java.util.ArrayList;
@@ -48,9 +50,17 @@ public class NestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         ((Holder)holder).tv.setText(mList.get(position).getTitle());
         Glide.with(mContext).load(mList.get(position).getImages().get(0)).into(((Holder)holder).img);
+        ((Holder)holder).cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, NewsDetailsActivity.class);
+                intent.putExtra("id",""+mList.get(position).getId());
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override

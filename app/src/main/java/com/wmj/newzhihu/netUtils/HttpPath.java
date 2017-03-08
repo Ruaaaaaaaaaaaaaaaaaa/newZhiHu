@@ -14,7 +14,7 @@ public class HttpPath {
      * 消息内容获取与离线下载
      * 使用在 最新消息 中获得的 id，拼接在 http://news-at.zhihu.com/api/4/news/ 后，得到对应消息 JSON 格式的内容
      */
-    public static final String NEWS_CONTENT = "http://news-at.zhihu.com/api/4/news/";
+    public static final String NEWS_DETAILS = "http://news-at.zhihu.com/api/4/news/";
 
     /**
      * 过往消息
@@ -33,6 +33,16 @@ public class HttpPath {
      * 主题日报内容
      */
     public static final String THEME_CONTENT = "http://news-at.zhihu.com/api/4/theme/";
+
+
+    /**
+     * 使用在 最新消息 中获得的 id，在 http://news-at.zhihu.com/api/4/story/#{id}/long-comments
+     * 中将 id 替换为对应的 id，得到长评论 JSON 格式的内容
+     *
+     * 使用在 最新消息 中获得的 id，在 http://news-at.zhihu.com/api/4/story/#{id}/short-comments
+     * 中将 id 替换为对应的 id，得到短评论 JSON 格式的内容
+     */
+    public static final String COMMENT= "http://news-at.zhihu.com/api/4/story/";
 
 
 
