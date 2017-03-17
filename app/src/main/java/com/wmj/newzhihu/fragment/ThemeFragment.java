@@ -19,9 +19,12 @@ import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.wmj.newzhihu.R;
+import com.wmj.newzhihu.activity.NewsDetailsActivity;
 import com.wmj.newzhihu.adapter.ThemeAdapter;
 import com.wmj.newzhihu.bean.Stories;
 import com.wmj.newzhihu.bean.ThemeItemBean;
+import com.wmj.newzhihu.imageLoader.ImageLoader;
+import com.wmj.newzhihu.imageLoader.ImageLoaderUtil;
 import com.wmj.newzhihu.netUtils.HttpPath;
 import com.wmj.newzhihu.netUtils.VolleyInterface;
 import com.wmj.newzhihu.netUtils.VolleyRequest;
@@ -68,7 +71,7 @@ public class ThemeFragment extends Fragment {
         initComponent(view);
         initDate();
         initListener();
-
+        scrollToTop();
         return view;
     }
 
@@ -89,6 +92,8 @@ public class ThemeFragment extends Fragment {
                 volleyGet();
             }
         }).start();
+        scrollToTop();
+
     }
 
     private void initDate() {
@@ -119,12 +124,15 @@ public class ThemeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+    }
+    public void scrollToTop(){
         mImageView.setFocusableInTouchMode(true);
         mImageView.requestFocus();
     }
     public void volleyGet() {
         String url = HttpPath.THEME_CONTENT+getThemeid();
-        VolleyRequest.RequestGet(getContext(), url, "124",
+        VolleyRequest.RequestGet(getContext(), url, "theme",
                 new VolleyInterface(getContext(), VolleyInterface.mListener, VolleyInterface.mErrorListener) {
 
                     @Override
@@ -137,8 +145,10 @@ public class ThemeFragment extends Fragment {
                         mList.addAll(s);
                         mThemeAdapter.notifyDataSetChanged();
 
-                        Glide.with(getContext()).load(mThemeItemBean.getImage()).
-                                into(mImageView);
+                        ImageLoader imageLoader =new ImageLoader.Builder().url(mThemeItemBean.getImage()).imageView(mImageView).build();
+                        ImageLoaderUtil.getInstance().loadImage(getContext(),imageLoader);
+//                        Glide.with(getContext()).load(mThemeItemBean.getImage()).
+//                                into(mImageView);
                         mTextViewTop.setText(mThemeItemBean.getDescription());
 
                         mLLEdit.removeViews(1,mLLEdit.getChildCount()-1);
@@ -148,6 +158,9 @@ public class ThemeFragment extends Fragment {
                                     WmjUtils.dp2px(getContext(),25));
                             params.setMargins(WmjUtils.dp2px(getContext(),15),0,0,0);
                             img.setLayoutParams(params);
+                            //// TODO: 2017-3-15 circleview and imageview
+//                            ImageLoader imageLoader2 =new ImageLoader.Builder().url(mThemeItemBean.getEditors().get(i).getAvater()).imageView(img).build();
+//                            ImageLoaderUtil.getInstance().loadImage(getContext(),imageLoader2);
                             Glide.with(getContext()).load(mThemeItemBean.getEditors().get(i).getAvater()).into(img);
                             mLLEdit.addView(img);
                         }

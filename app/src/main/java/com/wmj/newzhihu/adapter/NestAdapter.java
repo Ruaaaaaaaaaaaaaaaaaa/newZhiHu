@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,6 +62,7 @@ public class NestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                 mContext.startActivity(intent);
             }
         });
+        Log.i("qqq",((Holder)holder).cardView.getCardBackgroundColor().getDefaultColor()+"");
     }
 
     @Override

@@ -43,12 +43,13 @@ import java.util.Calendar;
 import java.util.List;
 
 import static android.R.id.list;
+import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class HomeFragment extends Fragment {
-
+    private static final String TAG = "HomeFragment";
     private RecyclerView mRecyclerView;
     private HomeAdapter adapter;
     private List<BeforeNewsBean> mList;
@@ -91,7 +92,7 @@ public class HomeFragment extends Fragment {
         initDate();
         initListener();
         initViewPager();
-
+        scrollToTop();
         return view;
     }
 
@@ -149,6 +150,7 @@ public class HomeFragment extends Fragment {
     private void refreshDate() {
         mList.clear();
         volleyGetTopImage();
+        scrollToTop();
         //// TODO: 2017-3-5
     }
 
@@ -221,10 +223,12 @@ public class HomeFragment extends Fragment {
                 mList.add(b);
                 adapter.notifyDataSetChanged();
                 mSwipeRefreshLayout.setRefreshing(false);
+
             }
 
             @Override
             public void onMyError(VolleyError error) {
+                Log.i(TAG, "onMyError: "+error);
             }
         });
     }
@@ -331,5 +335,14 @@ public class HomeFragment extends Fragment {
             }
         });
         pagerAdapter.notifyDataSetChanged();
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+
+    }
+    public void scrollToTop(){
+        mViewPager.setFocusableInTouchMode(true);
+        mViewPager.requestFocus();
     }
 }

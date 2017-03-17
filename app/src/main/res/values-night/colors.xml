@@ -5,7 +5,8 @@
     <color name="colorAccent">#212a2f</color>
 
     <color name="textColorPrimary">#616161</color>
-    <color name="viewBackground">#212a2f</color>
+    <color name="viewBackground">#1f1f1f</color>
+    <color name="textColorSecondary">#ffffff</color>
 
 
 </resources>

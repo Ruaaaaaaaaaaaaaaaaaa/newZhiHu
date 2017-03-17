@@ -1,6 +1,7 @@
 package com.wmj.newzhihu.activity;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 
 import com.android.volley.VolleyError;
@@ -22,9 +24,12 @@ import com.wmj.newzhihu.R;
 import com.wmj.newzhihu.bean.BeforeNewsBean;
 import com.wmj.newzhihu.bean.ContentBean;
 import com.wmj.newzhihu.bean.LastNews;
+import com.wmj.newzhihu.imageLoader.ImageLoader;
+import com.wmj.newzhihu.imageLoader.ImageLoaderUtil;
 import com.wmj.newzhihu.netUtils.HttpPath;
 import com.wmj.newzhihu.netUtils.VolleyInterface;
 import com.wmj.newzhihu.netUtils.VolleyRequest;
+import com.wmj.newzhihu.utils.SpUtil;
 import com.wmj.newzhihu.utils.WmjUtils;
 
 import org.json.JSONObject;
@@ -65,7 +70,43 @@ public class NewsDetailsActivity extends AppCompatActivity {
         id = getIntent().getStringExtra("id");
         mIVTop = (ImageView) findViewById(R.id.iv_topImage);
         mWebView = (WebView) findViewById(R.id.webview);
+        mWebView.getSettings().setJavaScriptEnabled(true);
+        if(SpUtil.getBooleanByPreferenceManager(NewsDetailsActivity.this,"current_text_size",false)){
+            mWebView.getSettings().setTextZoom(120);
+        }else{
+            mWebView.getSettings().setTextZoom(100);
+        }
+        if((NewsDetailsActivity.this.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK )== Configuration.UI_MODE_NIGHT_YES){
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+//                    mWebView.evaluateJavascript("document.body.style.backgroundColor=\"black\";document.body.style.color=\"white\";", null);
+                mWebView.evaluateJavascript("document.body.style.backgroundColor=\"212a2f\";document.body.style.color=\"white\";", null);
+            } else {
+                mWebView.loadUrl("javascript:document.body.style.backgroundColor=\"#black\";document.body.style.color=\"white\";");
+            }
+        }
+        mWebView.setWebViewClient(new webViewClient());
         volleyGet();
+    }
+    private class webViewClient extends WebViewClient {
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            view.loadUrl(url);
+            return true;
+        }
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view, url);
+            if((NewsDetailsActivity.this.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK )== Configuration.UI_MODE_NIGHT_YES){
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+//                    mWebView.evaluateJavascript("document.body.style.backgroundColor=\"black\";document.body.style.color=\"white\";", null);
+                    mWebView.evaluateJavascript("document.body.style.backgroundColor=\"212a2f\";document.body.style.color=\"white\";", null);
+                } else {
+                    mWebView.loadUrl("javascript:document.body.style.backgroundColor=\"#black\";document.body.style.color=\"white\";");
+                }
+            }
+
+        }
     }
 
     private void volleyGet() {
@@ -77,8 +118,12 @@ public class NewsDetailsActivity extends AppCompatActivity {
                     public void onMySuccess(JSONObject result) {
                         Gson gson = new GsonBuilder().serializeNulls().create();
                         mContentBean= gson.fromJson(String.valueOf(result), ContentBean.class);
+                        if(mContentBean.getImage()!=null){
+                            //Glide.with(NewsDetailsActivity.this).load(mContentBean.getImage()).into( mIVTop);
+                            ImageLoader imageLoader =new ImageLoader.Builder().url(mContentBean.getImage()).imageView(mIVTop).build();
+                            ImageLoaderUtil.getInstance().loadImage(NewsDetailsActivity.this,imageLoader);
+                        }
 
-                        Glide.with(NewsDetailsActivity.this).load(mContentBean.getImage()).into( mIVTop);
                         mToolbar.setTitle(mContentBean.getTitle());
                         mDate = mContentBean.getBody();
 

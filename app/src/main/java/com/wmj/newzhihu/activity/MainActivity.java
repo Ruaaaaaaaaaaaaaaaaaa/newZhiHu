@@ -1,5 +1,6 @@
 package com.wmj.newzhihu.activity;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -145,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void changeMode() {
+    private void changeMode(MenuItem item) {
 //        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 //        getWindow().setWindowAnimations(R.style.WindowAnimationFadeInOut);
 //        recreate();
@@ -192,10 +193,10 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "message", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.changeMode:
-                changeMode();
+                changeMode(item);
                 break;
             case R.id.settings:
-                Toast.makeText(this, "settings", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(MainActivity.this,SettingActivity.class));
                 break;
             case R.id.isFavorite:
                 if(item.getTitle()=="add"){

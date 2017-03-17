@@ -1,0 +1,46 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="常规">
+
+        <CheckBoxPreference
+            android:key="anto_download"
+            android:title="自动离线下载"
+            android:summary="仅Wi-Fi下可用，自动下载最新内容"
+            />
+
+        <CheckBoxPreference
+            android:key="OnlyWifiLoadImg"
+            android:title="无图模式"
+            android:summary="2G/3G 网络下不下载图片"
+            />
+
+        <CheckBoxPreference
+            android:key="current_text_size"
+            android:title="大字号"
+            />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="其他">
+        <CheckBoxPreference
+            android:key="push_message"
+            android:title="推送消息"
+            />
+        <CheckBoxPreference
+            android:key="share_to_weibo"
+            android:title="点评分享到微博"/>
+        <PreferenceScreen
+            android:title="清除缓存"/>
+        <Preference
+            android:title="检查更新"
+            android:summary="版本：1.0.0"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="反馈">
+        <Preference
+            android:title="意见反馈"
+            />
+    </PreferenceCategory>
+
+</PreferenceScreen>
