@@ -1,8 +1,11 @@
 package com.wmj.newzhihu.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
@@ -24,6 +27,7 @@ import com.wmj.newzhihu.R;
 import com.wmj.newzhihu.bean.BeforeNewsBean;
 import com.wmj.newzhihu.bean.ContentBean;
 import com.wmj.newzhihu.bean.LastNews;
+import com.wmj.newzhihu.date.GetDateUtil;
 import com.wmj.newzhihu.imageLoader.ImageLoader;
 import com.wmj.newzhihu.imageLoader.ImageLoaderUtil;
 import com.wmj.newzhihu.netUtils.HttpPath;
@@ -41,6 +45,42 @@ public class NewsDetailsActivity extends AppCompatActivity {
     private String mDate;
     private ImageView mIVTop;
     private Toolbar mToolbar;
+    private ProgressDialog mProgressDialog;
+
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if(msg.what == 1000){
+
+                Gson gson = new GsonBuilder().serializeNulls().create();
+                mContentBean= gson.fromJson(msg.getData().getString("date"), ContentBean.class);
+                if(mContentBean.getImage()!=null){
+                    ImageLoader imageLoader =new ImageLoader.Builder().url(mContentBean.getImage()).imageView(mIVTop).build();
+                    ImageLoaderUtil.getInstance().loadImage(NewsDetailsActivity.this,imageLoader);
+                }
+
+                mToolbar.setTitle(mContentBean.getTitle());
+                mDate = mContentBean.getBody();
+
+                if (TextUtils.isEmpty( mDate)) {
+                    mWebView.loadUrl( mContentBean.getShare_url());
+                    return;
+                }
+                String body = mDate.replace("<div class=\"headline\">", "").replace("<div class=\"img-place-holder\">", "");
+                String htmlData = "<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" />" + "<br/>" +body;
+                mWebView.loadDataWithBaseURL("file:///android_asset/", htmlData, "text/html", "UTF-8", null);
+                mProgressDialog.dismiss();
+
+            }
+            if (msg.what == 1001){
+                mToolbar.setTitle("");
+                mWebView.loadUrl("");
+                WmjUtils.showToast(NewsDetailsActivity.this,"无缓存");
+                mProgressDialog.dismiss();
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +111,10 @@ public class NewsDetailsActivity extends AppCompatActivity {
         mIVTop = (ImageView) findViewById(R.id.iv_topImage);
         mWebView = (WebView) findViewById(R.id.webview);
         mWebView.getSettings().setJavaScriptEnabled(true);
+        mProgressDialog = new ProgressDialog(NewsDetailsActivity.this);
+        mProgressDialog.setTitle("提示：");
+        mProgressDialog.setMessage("正在加载中");
+        mProgressDialog.setIcon(R.drawable.ic_launcher);
         if(SpUtil.getBooleanByPreferenceManager(NewsDetailsActivity.this,"current_text_size",false)){
             mWebView.getSettings().setTextZoom(120);
         }else{
@@ -111,36 +155,37 @@ public class NewsDetailsActivity extends AppCompatActivity {
 
     private void volleyGet() {
         String url = HttpPath.NEWS_DETAILS+id;
-        VolleyRequest.RequestGet(this, url, "details",
-                new VolleyInterface(this, VolleyInterface.mListener, VolleyInterface.mErrorListener) {
-
-                    @Override
-                    public void onMySuccess(JSONObject result) {
-                        Gson gson = new GsonBuilder().serializeNulls().create();
-                        mContentBean= gson.fromJson(String.valueOf(result), ContentBean.class);
-                        if(mContentBean.getImage()!=null){
-                            //Glide.with(NewsDetailsActivity.this).load(mContentBean.getImage()).into( mIVTop);
-                            ImageLoader imageLoader =new ImageLoader.Builder().url(mContentBean.getImage()).imageView(mIVTop).build();
-                            ImageLoaderUtil.getInstance().loadImage(NewsDetailsActivity.this,imageLoader);
-                        }
-
-                        mToolbar.setTitle(mContentBean.getTitle());
-                        mDate = mContentBean.getBody();
-
-                        if (TextUtils.isEmpty( mDate)) {
-                            mWebView.loadUrl( mContentBean.getShare_url());
-                            return;
-                        }
-                        String body = mDate.replace("<div class=\"headline\">", "").replace("<div class=\"img-place-holder\">", "");
-                        String htmlData = "<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" />" + "<br/>" +body;
-                        mWebView.loadDataWithBaseURL("file:///android_asset/", htmlData, "text/html", "UTF-8", null);
-
-                    }
-
-                    @Override
-                    public void onMyError(VolleyError error) {
-                    }
-                });
+        GetDateUtil.getDate(NewsDetailsActivity.this,url,mHandler);
+        mProgressDialog.show();
+//        VolleyRequest.RequestGet(this, url, "details",
+//                new VolleyInterface(this, VolleyInterface.mListener, VolleyInterface.mErrorListener) {
+//
+//                    @Override
+//                    public void onMySuccess(JSONObject result) {
+//                        Gson gson = new GsonBuilder().serializeNulls().create();
+//                        mContentBean= gson.fromJson(String.valueOf(result), ContentBean.class);
+//                        if(mContentBean.getImage()!=null){
+//                            ImageLoader imageLoader =new ImageLoader.Builder().url(mContentBean.getImage()).imageView(mIVTop).build();
+//                            ImageLoaderUtil.getInstance().loadImage(NewsDetailsActivity.this,imageLoader);
+//                        }
+//
+//                        mToolbar.setTitle(mContentBean.getTitle());
+//                        mDate = mContentBean.getBody();
+//
+//                        if (TextUtils.isEmpty( mDate)) {
+//                            mWebView.loadUrl( mContentBean.getShare_url());
+//                            return;
+//                        }
+//                        String body = mDate.replace("<div class=\"headline\">", "").replace("<div class=\"img-place-holder\">", "");
+//                        String htmlData = "<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" />" + "<br/>" +body;
+//                        mWebView.loadDataWithBaseURL("file:///android_asset/", htmlData, "text/html", "UTF-8", null);
+//
+//                    }
+//
+//                    @Override
+//                    public void onMyError(VolleyError error) {
+//                    }
+//                });
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

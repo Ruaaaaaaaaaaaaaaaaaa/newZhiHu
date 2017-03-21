@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     private void initFragment() {
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
+        ft.add(R.id.fragment,fragments[1]).hide(fragments[1]);
         ft.add(R.id.fragment,fragments[0]);
         mFragment = fragments[0];
         ft.commit();
@@ -136,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
                     mToolbar.getMenu().clear();
                     mToolbar.inflateMenu(R.menu.test);
                     changeFragment(fragments[1]);
-                    ((ThemeFragment)(fragments[1])).setThemeid( mLvMenuItem.get(positon).getId());
+                    ((ThemeFragment)(fragments[1])).setThemeid( Integer.parseInt(mLvMenuItem.get(positon).getId()));
                     ((ThemeFragment)(fragments[1])).volleyGet();
                 }
                 mDrawerLayout.closeDrawers();

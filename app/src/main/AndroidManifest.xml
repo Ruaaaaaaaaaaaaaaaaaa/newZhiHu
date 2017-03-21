@@ -3,7 +3,7 @@
     package="com.wmj.newzhihu">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".netUtils.MyApplication"
@@ -35,15 +35,15 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".activity.SettingsActivity"
-            android:label="@string/title_activity_settings">
-
-        </activity>
+            android:label="@string/title_activity_settings"></activity>
         <activity
             android:name=".activity.SettingActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"></activity>
 
-        </activity>
+        <service
+            android:name=".service.AutoDownloadIntentService"
+            android:exported="false"></service>
     </application>
 
 </manifest>

@@ -30,8 +30,10 @@
             android:key="share_to_weibo"
             android:title="点评分享到微博"/>
         <PreferenceScreen
+            android:key="remove_cache"
             android:title="清除缓存"/>
         <Preference
+            android:key="check_version"
             android:title="检查更新"
             android:summary="版本：1.0.0"/>
     </PreferenceCategory>
@@ -39,6 +41,7 @@
     <PreferenceCategory
         android:title="反馈">
         <Preference
+            android:key="back_comment"
             android:title="意见反馈"
             />
     </PreferenceCategory>

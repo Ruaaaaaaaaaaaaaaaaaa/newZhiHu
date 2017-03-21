@@ -31,6 +31,7 @@ import com.wmj.newzhihu.bean.BeforeNewsBean;
 import com.wmj.newzhihu.bean.LastNews;
 import com.wmj.newzhihu.bean.Stories;
 import com.wmj.newzhihu.bean.TopStories;
+import com.wmj.newzhihu.date.GetDateUtil;
 import com.wmj.newzhihu.netUtils.HttpPath;
 import com.wmj.newzhihu.netUtils.VolleyInterface;
 import com.wmj.newzhihu.netUtils.VolleyRequest;
@@ -66,6 +67,7 @@ public class HomeFragment extends Fragment {
     private int Scrolleight;
     private Calendar mCalendar;
     private String mDate;
+    private boolean isAuto = true;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -74,15 +76,63 @@ public class HomeFragment extends Fragment {
             switch (msg.what) {
 
                 case 2:
-                    if(pageList.size()!=0) {
+                    if(pageList.size()!=0&&isAuto) {
                         mViewPager.setCurrentItem((mViewPager.getCurrentItem()+1 )% pageList.size());
                     }
                     mHandler.sendEmptyMessageDelayed(2,3000);
+                    break;
+                case 1000:
+                    Gson gson = new GsonBuilder().serializeNulls().create();
+                    mLastNews= gson.fromJson(msg.getData().getString("date"), LastNews.class);
+                    changeViewPager(mLastNews);
+                    mDate = mLastNews.getDate();
+                    BeforeNewsBean b = new BeforeNewsBean();
+                    b.setStories(mLastNews.getStories());
+                    b.setDate("今日新闻");
+                    mList.add(b);
+                    adapter.notifyDataSetChanged();
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    scrollToTop();
+                    break;
+                case 1001:
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    WmjUtils.showToast(getContext(),"无缓存");
+                    break;
+            }
+        }
+    };
+    private Handler mHandler2 = new Handler() {
+        @Override
+        public void handleMessage(Message msg)
+        {
+            switch (msg.what) {
+                case 1000:
+                    Gson gson = new GsonBuilder().serializeNulls().create();
+                    mBeforeNewsBean= gson.fromJson(msg.getData().getString("date"), BeforeNewsBean.class);
+                    mDate = mBeforeNewsBean.getDate();
+                    mList.add(mBeforeNewsBean);
+                    adapter.notifyDataSetChanged();
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    break;
+                case 1001:
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    WmjUtils.showToast(getContext(),"无缓存");
                     break;
             }
         }
     };
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        isAuto = false;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        isAuto =true;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -187,50 +237,53 @@ public class HomeFragment extends Fragment {
     private void volleyGet() {
 
         String url = HttpPath.BEFORE_NEWS+ mDate;
-        VolleyRequest.RequestGet(getContext(), url, "124",
-                new VolleyInterface(getContext(), VolleyInterface.mListener, VolleyInterface.mErrorListener) {
-
-                    @Override
-                    public void onMySuccess(JSONObject result) {
-                        Gson gson = new GsonBuilder().serializeNulls().create();
-                        mBeforeNewsBean= gson.fromJson(String.valueOf(result), BeforeNewsBean.class);
-                        mDate = mBeforeNewsBean.getDate();
-                        mList.add(mBeforeNewsBean);
-                        adapter.notifyDataSetChanged();
-                        mSwipeRefreshLayout.setRefreshing(false);
-                    }
-
-                    @Override
-                    public void onMyError(VolleyError error) {
-                    }
-                });
+        GetDateUtil.getDate(getContext(),url,mHandler2);
+//        VolleyRequest.RequestGet(getContext(), url, "124",
+//                new VolleyInterface(getContext(), VolleyInterface.mListener, VolleyInterface.mErrorListener) {
+//
+//                    @Override
+//                    public void onMySuccess(JSONObject result) {
+//                        Gson gson = new GsonBuilder().serializeNulls().create();
+//                        mBeforeNewsBean= gson.fromJson(String.valueOf(result), BeforeNewsBean.class);
+//                        mDate = mBeforeNewsBean.getDate();
+//                        mList.add(mBeforeNewsBean);
+//                        adapter.notifyDataSetChanged();
+//                        mSwipeRefreshLayout.setRefreshing(false);
+//                    }
+//
+//                    @Override
+//                    public void onMyError(VolleyError error) {
+//                    }
+//                });
     }
 
     private void volleyGetTopImage() {
         String url = HttpPath.LASTEST_NEWS;
-        VolleyRequest.RequestGet(getContext(), url, "TOP_IMAGE",
-                new VolleyInterface(getContext(), VolleyInterface.mListener, VolleyInterface.mErrorListener) {
-                    
-            @Override
-            public void onMySuccess(JSONObject result) {
-                Gson gson = new GsonBuilder().serializeNulls().create();
-                mLastNews= gson.fromJson(String.valueOf(result), LastNews.class);
-                changeViewPager(mLastNews);
-                mDate = mLastNews.getDate();
-                BeforeNewsBean b = new BeforeNewsBean();
-                b.setStories(mLastNews.getStories());
-                b.setDate("今日新闻");
-                mList.add(b);
-                adapter.notifyDataSetChanged();
-                mSwipeRefreshLayout.setRefreshing(false);
+        GetDateUtil.getDate(getContext(),url,mHandler);
 
-            }
-
-            @Override
-            public void onMyError(VolleyError error) {
-                Log.i(TAG, "onMyError: "+error);
-            }
-        });
+//        VolleyRequest.RequestGet(getContext(), url, "TOP_IMAGE",
+//                new VolleyInterface(getContext(), VolleyInterface.mListener, VolleyInterface.mErrorListener) {
+//
+//            @Override
+//            public void onMySuccess(JSONObject result) {
+//                Gson gson = new GsonBuilder().serializeNulls().create();
+//                mLastNews= gson.fromJson(String.valueOf(result), LastNews.class);
+//                changeViewPager(mLastNews);
+//                mDate = mLastNews.getDate();
+//                BeforeNewsBean b = new BeforeNewsBean();
+//                b.setStories(mLastNews.getStories());
+//                b.setDate("今日新闻");
+//                mList.add(b);
+//                adapter.notifyDataSetChanged();
+//                mSwipeRefreshLayout.setRefreshing(false);
+//
+//            }
+//
+//            @Override
+//            public void onMyError(VolleyError error) {
+//                Log.i(TAG, "onMyError: "+error);
+//            }
+//        });
     }
 
     private void changeViewPager(LastNews lastNews) {

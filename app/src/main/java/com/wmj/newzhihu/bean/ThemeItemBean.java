@@ -1,19 +1,34 @@
 package com.wmj.newzhihu.bean;
 
+import org.litepal.crud.DataSupport;
+
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by wumingjun1 on 2017/2/20.
  */
 
-public class ThemeItemBean {
-    private List<Stories> stories;
+public class ThemeItemBean extends DataSupport implements Serializable{
+
+    private int themeid;
+
+    public int getThemeid() {
+        return themeid;
+    }
+
+    public void setThemeid(int themeid) {
+        this.themeid = themeid;
+    }
+
+    private List<Stories> stories = new ArrayList<>();
     private String description;
     private String background;
     private String color;
     private String name;
     private String image;
-    private List<Editor> editors;
+    private List<Editor> editors = new ArrayList<>();
     private String image_source;
 
     @Override

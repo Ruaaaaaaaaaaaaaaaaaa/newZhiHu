@@ -53,7 +53,7 @@ public class ImageLoader {
         public Builder(){
             this.type = ImageLoaderUtil.PIC_SMALL;
             this.url = "";
-            this.placeHolder = R.drawable.ic_launcher;
+            this.placeHolder = R.drawable.ic_placeholder;
             this.imageView = null;
             this.wifiStrategy = ImageLoaderUtil.LOAD_STRATEGY_ONLY_WIFI;
         }

@@ -1,5 +1,9 @@
 package com.wmj.newzhihu.bean;
 
+import com.google.gson.annotations.SerializedName;
+
+import org.litepal.crud.DataSupport;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -7,13 +11,33 @@ import java.util.List;
  * Created by wumingjun1 on 2017/2/16.
  */
 
-public class Stories implements Serializable{
+public class Stories extends DataSupport implements Serializable{
     private List<String> images;
     private String type;
-    private String id;
+
+    public String getStoryId() {
+        return storyId;
+    }
+
+    public void setStoryId(String storyId) {
+        this.storyId = storyId;
+    }
+
+    @SerializedName("id")
+    private String storyId;
     private String ga_prefix;
     private String title;
     private boolean multipic;
+
+    private int themeid;
+
+    public int getThemeid() {
+        return themeid;
+    }
+
+    public void setThemeid(int themeid) {
+        this.themeid = themeid;
+    }
 
     public int getDateType() {
         return dateType;
@@ -47,13 +71,7 @@ public class Stories implements Serializable{
         this.ga_prefix = ga_prefix;
     }
 
-    public String getId() {
-        return id;
-    }
 
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public List<String> getImages() {
         return images;
@@ -85,7 +103,7 @@ public class Stories implements Serializable{
                 "ga_prefix='" + ga_prefix + '\'' +
                 ", images=" + images +
                 ", type='" + type + '\'' +
-                ", id='" + id + '\'' +
+                ", id='" + storyId + '\'' +
                 ", title='" + title + '\'' +
                 ", multipic=" + multipic +
                 '}';

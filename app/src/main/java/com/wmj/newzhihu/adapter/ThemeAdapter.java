@@ -65,7 +65,7 @@ public class ThemeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, NewsDetailsActivity.class);
-                intent.putExtra("id",""+mList.get(position).getId());
+                intent.putExtra("id",""+mList.get(position).getStoryId());
                 mContext.startActivity(intent);
             }
         });
